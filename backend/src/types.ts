@@ -1,6 +1,7 @@
 import { Response } from 'express'
 import { Request } from 'express'
-import { User } from './entity/User'
+import { Session } from './entity/Session'
+import { Project, User } from './entity/User'
 
 declare module 'express' {
     interface Request {
@@ -12,4 +13,5 @@ export interface MyContext {
     request: Request
     response: Response
     user?: User
+    session?: Session
 } 

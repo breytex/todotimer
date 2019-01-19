@@ -1,11 +1,12 @@
 import { Context } from 'graphql-yoga/dist/types'
 import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
-import { User, UserInput } from "../entity/User"
+import { Project, User, UserInput } from "../entity/User"
 import { checkIfNotExpired } from "../helpers/date"
 import log from "../helpers/log"
 import { Login, Session } from './../entity/Session'
 import { MyContext } from './../types'
 
+export const SESSION_COOKIE_NAME = "freelancertoolsSession"
 export class SessionResolver {
     @Authorized()
     @Query(returns => User)
@@ -47,7 +48,7 @@ export class SessionResolver {
 
             let session = await Session.create({ user })
             session = await session.save()
-            response.cookie('freelancertoolsSession', session.token, { maxAge: 2592000, httpOnly: false })
+            response.cookie(SESSION_COOKIE_NAME, session.token, { maxAge: 2592000, httpOnly: false })
             return session.token
         } else {
             throw new Error("invalid-token")
@@ -58,9 +59,9 @@ export class SessionResolver {
     @Mutation(returns => Boolean)
     async logout(@Ctx() { request, response, user }: MyContext) {
         if (user) {
-            const token = request.cookies.freelancertoolsSession
+            const token = request.cookies[SESSION_COOKIE_NAME]
             Session.remove(await Session.findOne({ token }))
-            response.clearCookie('freelancertoolsSession')
+            response.clearCookie(SESSION_COOKIE_NAME)
             return true
         }
         return false

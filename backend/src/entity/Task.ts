@@ -1,20 +1,24 @@
 import { MaxLength } from 'class-validator'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
-import { MyEntity } from './Entity'
-import { OwnerEntity, User } from './User'
+import { OwnerProjectEntity, User } from './User'
 
 @ObjectType()
 @Entity()
-export class Todo extends OwnerEntity {
+export class Task extends OwnerProjectEntity {
     @Field()
     @Column()
-    text: string
+    title: string
+
+    @Field()
+    @ManyToOne(type => User)
+    @JoinColumn()
+    asignee: User
 }
 
 @InputType()
-export class TodoInput {
+export class TaskInput {
     @Field()
     @MaxLength(30)
-    text: string
+    title: string
 }

@@ -6,7 +6,7 @@
     "username": "root",
     "password": "mysql",
     "database": "typeorm",
-    "synchronize": false,
+    "synchronize": true,
     "logging": false,
     "entities": ["src/entity/**/*.*"],
     "migrations": ["src/migration/**/*.*"],

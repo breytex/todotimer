@@ -1,5 +1,5 @@
 import { ProjectResolver } from './Project'
 import { SessionResolver } from './Session'
-import { TodoResolver } from './Todo'
+import { TaskResolver } from './Task'
 
-export const resolvers = [ProjectResolver, SessionResolver, TodoResolver]
+export const resolvers = [ProjectResolver, SessionResolver, TaskResolver]

@@ -1,7 +1,6 @@
 import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
 import { log } from "util"
 import { Project, User } from "../entity/User"
-import { Todo } from './../entity/Todo'
 import { MyContext } from './../types'
 
 export class ProjectResolver {
@@ -27,7 +26,7 @@ export class ProjectResolver {
 
     @Authorized()
     @Mutation(returns => Boolean)
-    async createProject(@Arg("title") title: string, @Arg("color") color: string, @Ctx() { user }: MyContext) {
+    async createProject(@Arg("title") title: string, @Arg("color", { nullable: true }) color: string, @Ctx() { user }: MyContext) {
         const project = await Project.create({ title, color, user })
         await project.save()
         return true

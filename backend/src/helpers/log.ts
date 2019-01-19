@@ -1,4 +1,4 @@
-const log = (text: string, { error = false, lines = false } = {}) => {
+const log = (text: string, { error = false, lines = false, devOnly = false } = {}) => {
     if (process.env.NODE_ENV === "development") {
         if (lines) { console.log("---------------------------") }
 

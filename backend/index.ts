@@ -23,6 +23,7 @@ import { MyContext } from './src/types'
         response,
         request,
         user: null,
+        session: null,
       }
     },
     schema,

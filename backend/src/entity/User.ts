@@ -23,6 +23,8 @@ export class UserInput {
 }
 
 export abstract class OwnerEntity extends MyEntity {
+
+    @Field()
     @ManyToOne(type => User)
     @JoinColumn()
     user: User
@@ -33,6 +35,18 @@ export abstract class OwnerEntity extends MyEntity {
 @ObjectType()
 @Entity()
 export class Project extends OwnerEntity {
+
+    static async get(projectid: string, user: User): Promise<Project> {
+        let project = await Project.findOne({ id: projectid, user })
+        if (!project) {
+            project = user.projectAccess.find(e => e.id === projectid)
+            if (!project) {
+                throw Error("projectNotFound")
+            }
+        }
+        return project
+    }
+
     @Field()
     @Column()
     title: string
@@ -55,4 +69,10 @@ export class ProjectInput {
     @Field()
     @MaxLength(7)
     color?: string
+}
+
+export abstract class OwnerProjectEntity extends OwnerEntity {
+    @ManyToOne(type => Project)
+    @JoinColumn()
+    project: Project
 }
