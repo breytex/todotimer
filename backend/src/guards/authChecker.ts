@@ -10,7 +10,7 @@ export const authChecker: AuthChecker<MyContext> = async ({ context }, roles) =>
 
     const cookie = context.request.cookies.freelancertoolsSession
     if (cookie) {
-        const session: Session = await Session.findOne({ token: cookie }, { relations: ["user"] })
+        const session: Session = await Session.findOne({ token: cookie }, { relations: ["user", "user.projectAccess"] })
         if (session) {
             if (session.user) {
                 context.user = session.user

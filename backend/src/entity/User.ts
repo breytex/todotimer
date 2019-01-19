@@ -1,6 +1,6 @@
 import { IsEmail, MaxLength } from 'class-validator'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm"
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm"
 import { MyEntity } from './Entity'
 
 @ObjectType()
@@ -10,6 +10,9 @@ export class User extends MyEntity {
     @Column()
     @IsEmail()
     email: string
+
+    @ManyToMany(type => Project, project => project.userAccess)
+    projectAccess: Project[]
 }
 
 @InputType()
@@ -23,4 +26,33 @@ export abstract class OwnerEntity extends MyEntity {
     @ManyToOne(type => User)
     @JoinColumn()
     user: User
+}
+
+// Project has to be defined in same file like User
+// to prevent circular includes
+@ObjectType()
+@Entity()
+export class Project extends OwnerEntity {
+    @Field()
+    @Column()
+    title: string
+
+    @Field()
+    @Column()
+    color?: string
+
+    @ManyToMany(type => User, user => user.projectAccess)
+    @JoinTable()
+    userAccess: User[]
+}
+
+@InputType()
+export class ProjectInput {
+    @Field()
+    @MaxLength(30)
+    title: string
+
+    @Field()
+    @MaxLength(7)
+    color?: string
 }
