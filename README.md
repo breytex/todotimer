@@ -3,6 +3,7 @@
 This repository holds a very basic implementation of (medium-like) authentication based on 
 * [type-graphql](https://github.com/19majkel94/type-graphql)
 * [typeorm](https://github.com/typeorm/typeorm)
+* Project structure and jest resolver testing is heavily inspired by Ben Awad [type-graphql-series](https://github.com/benawad/type-graphql-series). Thanks!
 * docker
 
 # Install
@@ -79,3 +80,16 @@ query{
 ```
 # Connecting a frontend
 Check out [react-yoga-mongo-nginx-docker](https://github.com/breytex/react-yoga-mongo-nginx-docker) to see how to connect a frontend container (with react) to the stack.
+
+# Testing
+Resolvers can be tested using `jest`.
+You can see test implementations here:
+* `src/resolvers/Session.test.ts`
+* `src/resolvers/Todo.test.js`
+
+You can run the tests with:
+```
+docker-compose run --rm backend npm test
+```
+
+All tests should pass without errors after a fresh clone of this repository.

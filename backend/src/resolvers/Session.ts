@@ -60,7 +60,7 @@ export class SessionResolver {
     async logout(@Ctx() { request, response, user }: MyContext) {
         if (user) {
             const token = request.cookies[SESSION_COOKIE_NAME]
-            Session.remove(await Session.findOne({ token }))
+            Session.delete({ token })
             response.clearCookie(SESSION_COOKIE_NAME)
             return true
         }
