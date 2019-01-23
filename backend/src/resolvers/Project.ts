@@ -16,8 +16,8 @@ export class ProjectResolver {
     @Authorized()
     @Query(returns => Project)
     async project(@Arg("id") id: string, @Ctx() { user }: MyContext) {
-        const project = await Project.findOne({ id, user }) // restricting access to project's which belong to the loggedIn user
-        if (project) {
+        const project = await Project.findOne({ id }, { relations: ["userAccess"] })
+        if (project && project.userAccess.filter(e => e.id === user.id).length > 0) {
             return project
         } else {
             throw Error("notFound")
