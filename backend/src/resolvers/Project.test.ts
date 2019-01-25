@@ -20,7 +20,7 @@ afterAll(async () => {
 
 
 const createProjectMutation = `
-mutation CreateProject($title: String!, $color: String!){createProject(title:$title, color:$color)}
+mutation CreateProject($title: String!, $color: String!){createProject(title:$title, color:$color){title}}
 `
 
 const grantProjectAccessMutation = `
@@ -82,5 +82,14 @@ describe("A loggedin user", async () => {
         })
     })
 
-
 })
+
+// describe("A user", () => {
+//     it("should not have access to a different users project", async () => {
+//         const projectFromB = await gCall({
+//             source: createProjectMutation, cookie: userB.sessionToken,
+//             variableValues: { title: userB.projectTitle, color: "#000000" }
+//         })
+
+//     })
+// })

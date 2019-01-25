@@ -11,8 +11,8 @@ export class User extends MyEntity {
     @IsEmail()
     email: string
 
-    @ManyToMany(type => Project, project => project.userAccess)
-    projectAccess: Project[]
+    @ManyToMany(type => Project, project => project.userAccess, { lazy: true })
+    projectAccess: Promise<Project[]>
 }
 
 @InputType()
@@ -25,7 +25,7 @@ export class UserInput {
 export abstract class OwnerEntity extends MyEntity {
 
     @Field()
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { eager: true })
     @JoinColumn()
     user: User
 }
@@ -39,7 +39,7 @@ export class Project extends OwnerEntity {
     static async get(projectid: string, user: User): Promise<Project> {
         let project = await Project.findOne({ id: projectid, user })
         if (!project) {
-            project = user.projectAccess.find(e => e.id === projectid)
+            project = (await user.projectAccess).find(e => e.id === projectid)
             if (!project) {
                 throw Error("projectNotFound")
             }
@@ -55,9 +55,9 @@ export class Project extends OwnerEntity {
     @Column()
     color?: string
 
-    @ManyToMany(type => User, user => user.projectAccess)
+    @ManyToMany(type => User, user => user.projectAccess, { lazy: true })
     @JoinTable()
-    userAccess: User[]
+    userAccess: Promise<User[]>
 }
 
 @InputType()
@@ -72,7 +72,7 @@ export class ProjectInput {
 }
 
 export abstract class OwnerProjectEntity extends OwnerEntity {
-    @ManyToOne(type => Project)
+    @ManyToOne(type => Project, { eager: true })
     @JoinColumn()
     project: Project
 }
