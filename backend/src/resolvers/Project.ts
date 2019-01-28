@@ -1,4 +1,5 @@
 import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
+import { getConnection } from "typeorm"
 import { log } from "util"
 import { Project, User } from "../entity/User"
 import { checkAccess } from '../helpers/access'
@@ -43,7 +44,12 @@ export class ProjectResolver {
             const projectAccess = await project.userAccess
             // TODO: fix project.test error
             project.userAccess = Promise.resolve([invitee])
-            await project.save()
+
+            await getConnection()
+                .createQueryBuilder()
+                .relation(Project, 'userAccess')
+                .of(project)
+                .addAndRemove(invitee, invitee)
             return true
         } catch (e) {
             console.log(e)
