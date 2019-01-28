@@ -25,7 +25,7 @@ export class UserInput {
 export abstract class OwnerEntity extends MyEntity {
 
     @Field()
-    @ManyToOne(type => User, { eager: true })
+    @ManyToOne(type => User)
     @JoinColumn()
     user: User
 }
@@ -72,7 +72,7 @@ export class ProjectInput {
 }
 
 export abstract class OwnerProjectEntity extends OwnerEntity {
-    @ManyToOne(type => Project, { eager: true })
+    @ManyToOne(type => Project)
     @JoinColumn()
     project: Project
 }

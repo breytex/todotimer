@@ -40,7 +40,7 @@ export class SessionResolver {
 
     @Mutation(returns => String)
     async signIn(@Arg("token") token: string, @Ctx() { response }: MyContext) {
-        const login: Login = await Login.findOne({ token })
+        const login: Login = await Login.findOne({ token }, { relations: ["user"] })
         if (login && checkIfNotExpired(login.createdAt, 10)) {
             const user: User = login.user
             const oldLogins = await Login.find({ where: { user } })

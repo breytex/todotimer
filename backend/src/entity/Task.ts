@@ -11,7 +11,7 @@ export class Task extends OwnerProjectEntity {
     title: string
 
     @Field()
-    @ManyToOne(type => User, { eager: true })
+    @ManyToOne(type => User)
     @JoinColumn()
     asignee: User
 }

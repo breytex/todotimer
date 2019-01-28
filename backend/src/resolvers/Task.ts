@@ -25,7 +25,7 @@ export class TaskResolver {
   @Authorized()
   @Query(returns => Task)
   async task(@Arg("id") id: string, @Ctx() { user }: MyContext) {
-    const task = await Task.findOneOrFail({ id }) // restricting access to tasks's which belong to the loggedIn user
+    const task = await Task.findOneOrFail({ id }, { relations: ["asignee"] }) // restricting access to tasks's which belong to the loggedIn user
     if (await checkAccess(task, user)) {
       return task
     }
