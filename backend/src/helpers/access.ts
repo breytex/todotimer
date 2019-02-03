@@ -1,4 +1,4 @@
-import { Task } from "../entity/Task"
+import { Task } from "../entity/User"
 import { Project, User } from "../entity/User"
 
 export const checkAccess = async (entity: Project | Task, user: User) => {
