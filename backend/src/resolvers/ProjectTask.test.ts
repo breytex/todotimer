@@ -2,12 +2,12 @@ import { Connection } from "typeorm"
 import { loginUser } from '../test-utils/loginHelper'
 
 import * as faker from "faker"
-import { Project } from "../entity/User"
+import { Project, Task } from "../entity/User"
 import { gCall } from "../test-utils/gCall"
 import { createTypeormConn } from "../typeormConnection"
 let conn: Connection
 
-const userA = { sessionToken: "", projectTitle: "Project from user A", email: faker.internet.email() }
+const userA = { sessionToken: "", projectTitle: "Project from user A", taskTitle: "Task in Project form user A created by user A", email: faker.internet.email() }
 const userB = { sessionToken: "", projectTitle: "Project from user B", email: faker.internet.email() }
 beforeAll(async () => {
     conn = await createTypeormConn({ testing: true })
@@ -31,6 +31,10 @@ mutation GrantAccess($email: String!, $projectid: String!){
 const projectsQuery = `query{projects{title}}`
 const projectQuery = `query Project($id: String!){project(id:$id){title}}`
 
+const createTask = `mutation CreateTask($projectid: String!, $title: String!){
+    createTask(projectid: $projectid, title: $title)
+}`
+
 describe("A loggedin user", async () => {
 
     let projectA: Project
@@ -48,8 +52,23 @@ describe("A loggedin user", async () => {
         })
     })
 
-    describe("and", () => {
-        it("share it with another user", async () => {
+    describe("should be able to", () => {
+        it("create a task in a project", async () => {
+            const response = await gCall({
+                source: createTask, cookie: userA.sessionToken,
+                variableValues: { title: userA.taskTitle, projectid: projectA.id }
+            })
+
+            const task: Task = await Task.findOne({ where: { title: userA.taskTitle } })
+
+            expect(response).toBe({})
+            expect(task.title).toBe(userA.taskTitle)
+
+        })
+    })
+
+    describe("should be able to", () => {
+        it("share a project with another user", async () => {
             const response = await gCall({
                 source: grantProjectAccessMutation, cookie: userA.sessionToken,
                 variableValues: { email: userB.email, projectid: projectA.id }

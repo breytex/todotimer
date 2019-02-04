@@ -34,24 +34,31 @@ export class TaskResolver {
   @Authorized()
   @Mutation(returns => Boolean)
   async createTask(@Arg("projectid") projectid: string, @Arg("title") title: string, @Ctx() { user }: MyContext) {
-    const project = await Project.get(projectid, user) // check if project exists
-    if (await checkAccess(project, user)) {
-      let task
-      if ((await project.userAccess).length === 0) {
-        // assign all tasks to the user itself, if no other users are invited to the project
-        task = await Task.create({ title, user, project, asignee: user })
-      } else {
-        task = await Task.create({ title, user, project })
+    try {
+      const project = await Project.findOneOrFail(projectid) // check if project exists
+      console.log(project)
+      if (await checkAccess(project, user)) {
+        let task
+        if ((await project.userAccess).length === 0) {
+          // assign all tasks to the user itself, if no other users are invited to the project
+          task = await Task.create({ title, user, project, asignee: user })
+        } else {
+          task = await Task.create({ title, user, project })
+        }
+
+        await task.save()
+
+        // add task to first board column
+        const firstBoardColumn = await project.getBoardByOrderIndex(0)
+        console.log(firstBoardColumn)
+        firstBoardColumn.tasks.push(task)
+        firstBoardColumn.save()
       }
-
-      await task.save()
-
-      // add task to first board column
-      const firstBoardColumn = project.getBoardByOrderIndex(0)
-      firstBoardColumn.tasks.push(task)
-      firstBoardColumn.save()
-      return true
+    } catch (e) {
+      console.error(e)
+      throw Error(e)
     }
-
+    return true
   }
+
 }

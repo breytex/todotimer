@@ -25,7 +25,7 @@ export class UserInput {
 export abstract class OwnerEntity extends MyEntity {
 
     @Field()
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { eager: true })
     @JoinColumn()
     user: User
 }
@@ -59,18 +59,20 @@ export class Project extends OwnerEntity {
     @JoinTable()
     userAccess: Promise<User[]>
 
-    @OneToMany(type => BoardColumn, boardColumn => boardColumn.project, { eager: true })
+    @OneToMany(type => BoardColumn, boardColumn => boardColumn.project, { lazy: true })
     boardColumns: BoardColumn[]
 
     @Column()
-    boardColumnsOrder: string
+    boardColumnsOrder: string = ""
 
 
-    getBoardByOrderIndex(index): BoardColumn {
+    async getBoardByOrderIndex(index): Promise<BoardColumn> {
         if (index > this.boardColumnsOrder.length) {
             throw Error("BoardOrderArrayOutOfBounce")
         }
-        return this.boardColumns.filter(column => column.id === this.boardColumnsOrder[index])[0]
+        const boardColumns = (await this.boardColumns)
+        console.log(boardColumns)
+        return boardColumns.filter(column => column.id === this.boardColumnsOrder[index])[0]
     }
 
 }
@@ -104,6 +106,9 @@ export class Task extends OwnerProjectEntity {
     @ManyToOne(type => User)
     @JoinColumn()
     asignee: User
+
+    @ManyToOne(type => BoardColumn, boardColumn => boardColumn.tasks)
+    test: BoardColumn
 }
 
 @InputType()
@@ -142,11 +147,10 @@ export class BoardColumn extends BaseEntity {
     @Column()
     emoji: string
 
-    @OneToOne(type => Task, { eager: true })
+    @OneToMany(type => Task, task => task.test)
     tasks: Task[]
 
     @ManyToOne(type => Project)
-    @JoinColumn()
     project: Project
 
 }

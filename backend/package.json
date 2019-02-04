@@ -6,7 +6,8 @@
   "scripts": {
     "dockerstart": "ts-node-dev --respawn index.ts",
     "db:setup": "ts-node ./src/test-utils/setup.ts",
-    "test": "npm run db:setup && jest"
+    "test": "npm run db:setup && jest",
+    "test-watch": "npm run db:setup && jest --watchAll"
   },
   "author": "",
   "license": "ISC",

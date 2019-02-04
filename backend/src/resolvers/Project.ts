@@ -30,12 +30,19 @@ export class ProjectResolver {
     @Authorized()
     @Mutation(returns => Project)
     async createProject(@Arg("title") title: string, @Arg("color", { nullable: true }) color: string, @Ctx() { user }: MyContext) {
-        const initialBoard = await BoardColumn.createDefaultBoard()
-        const project = await Project.create({ title, color, user })
-        project.boardColumns = initialBoard.boardColumns
-        project.boardColumnsOrder = initialBoard.boardColumnIds
-        await project.save()
-        await project.reload()
+        let project: Project
+        try {
+            const initialBoard = await BoardColumn.createDefaultBoard()
+            project = await Project.create({ title, color, user })
+            project.boardColumns = initialBoard.boardColumns
+            project.boardColumnsOrder = initialBoard.boardColumnIds
+            await project.save()
+            await project.reload()
+        } catch (e) {
+            console.error(e)
+            throw new Error(e)
+        }
+
         return project
     }
 

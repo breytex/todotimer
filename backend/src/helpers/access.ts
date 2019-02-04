@@ -3,6 +3,7 @@ import { Project, User } from "../entity/User"
 
 export const checkAccess = async (entity: Project | Task, user: User) => {
     // trivial case: user is owner of the given entity
+    console.log(user)
     if (entity.user.id === user.id) {
         return true
     }
