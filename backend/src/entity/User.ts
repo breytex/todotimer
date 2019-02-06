@@ -63,16 +63,19 @@ export class Project extends OwnerEntity {
     boardColumns: BoardColumn[]
 
     @Column()
-    boardColumnsOrder: string = ""
+    boardColumnsOrderJson: string = ""
 
+    getBoardColumnsOrder() {
+        return JSON.parse(this.boardColumnsOrderJson)
+    }
 
     async getBoardByOrderIndex(index): Promise<BoardColumn> {
-        if (index > this.boardColumnsOrder.length) {
+        const boardColumnOrder = this.getBoardColumnsOrder()
+        if (index > boardColumnOrder.length) {
             throw Error("BoardOrderArrayOutOfBounce")
         }
         const boardColumns = (await this.boardColumns)
-        console.log(boardColumns)
-        return boardColumns.filter(column => column.id === this.boardColumnsOrder[index])[0]
+        return boardColumns.filter(column => column.id === boardColumnOrder[index])[0]
     }
 
 }
@@ -93,29 +96,6 @@ export abstract class OwnerProjectEntity extends OwnerEntity {
     @ManyToOne(type => Project)
     @JoinColumn()
     project: Project
-}
-
-@ObjectType()
-@Entity()
-export class Task extends OwnerProjectEntity {
-    @Field()
-    @Column()
-    title: string
-
-    @Field()
-    @ManyToOne(type => User)
-    @JoinColumn()
-    asignee: User
-
-    @ManyToOne(type => BoardColumn, boardColumn => boardColumn.tasks)
-    test: BoardColumn
-}
-
-@InputType()
-export class TaskInput {
-    @Field()
-    @MaxLength(30)
-    title: string
 }
 
 
@@ -147,10 +127,35 @@ export class BoardColumn extends BaseEntity {
     @Column()
     emoji: string
 
-    @OneToMany(type => Task, task => task.test)
+    @OneToMany(type => Task, task => task.boardColumn, { lazy: true })
     tasks: Task[]
 
     @ManyToOne(type => Project)
     project: Project
 
 }
+
+@ObjectType()
+@Entity()
+export class Task extends OwnerProjectEntity {
+    @Field()
+    @Column()
+    title: string
+
+    @Field()
+    @ManyToOne(type => User)
+    @JoinColumn()
+    asignee: User
+
+    @ManyToOne(type => BoardColumn, boardColumn => boardColumn.tasks, { lazy: true })
+    boardColumn: BoardColumn
+}
+
+@InputType()
+export class TaskInput {
+    @Field()
+    @MaxLength(30)
+    title: string
+}
+
+

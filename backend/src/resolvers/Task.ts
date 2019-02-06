@@ -1,5 +1,6 @@
 import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
-import { Task } from '../entity/User'
+import { getConnection } from "typeorm"
+import { BoardColumn, Task } from '../entity/User'
 import { Project, User } from "../entity/User"
 import { checkAccess } from "../helpers/access"
 import { MyContext } from './../types'
@@ -50,9 +51,12 @@ export class TaskResolver {
 
         // add task to first board column
         const firstBoardColumn = await project.getBoardByOrderIndex(0)
-        console.log(firstBoardColumn)
-        firstBoardColumn.tasks.push(task)
-        firstBoardColumn.save()
+        await getConnection()
+          .createQueryBuilder()
+          .relation(BoardColumn, 'tasks')
+          .of(firstBoardColumn)
+          .addAndRemove(task, task)
+
       }
     } catch (e) {
       console.error(e)

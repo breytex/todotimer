@@ -61,7 +61,11 @@ describe("A loggedin user", async () => {
 
             const task: Task = await Task.findOne({ where: { title: userA.taskTitle } })
 
-            expect(response).toBe({})
+            expect(response).toMatchObject({
+                "data": {
+                    "createTask": true,
+                }
+            })
             expect(task.title).toBe(userA.taskTitle)
 
         })

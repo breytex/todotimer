@@ -35,7 +35,7 @@ export class ProjectResolver {
             const initialBoard = await BoardColumn.createDefaultBoard()
             project = await Project.create({ title, color, user })
             project.boardColumns = initialBoard.boardColumns
-            project.boardColumnsOrder = initialBoard.boardColumnIds
+            project.boardColumnsOrderJson = initialBoard.boardColumnIds
             await project.save()
             await project.reload()
         } catch (e) {
