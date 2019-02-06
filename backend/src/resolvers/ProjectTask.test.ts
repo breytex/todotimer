@@ -105,6 +105,17 @@ describe("A loggedin user", async () => {
         })
     })
 
+    describe("should not be able to", () => {
+        it("move a task of another user to another board column", async () => {
+            const response = await gCall({
+                source: moveTask, cookie: userB.sessionToken,
+                variableValues: { taskid: task.id, targetboardcolumnid: nextBoardColumn.id }
+            })
+            console.log(response)
+            expect(response.errors[0].message).toBe("accessDenied")
+        })
+    })
+
     describe("should be able to", () => {
         it("share a project with another user", async () => {
             const response = await gCall({

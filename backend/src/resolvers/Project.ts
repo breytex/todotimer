@@ -32,7 +32,7 @@ export class ProjectResolver {
     async createProject(@Arg("title") title: string, @Arg("color", { nullable: true }) color: string, @Ctx() { user }: MyContext) {
         let project: Project
         try {
-            const initialBoard = await BoardColumn.createDefaultBoard()
+            const initialBoard = await BoardColumn.createDefaultBoard(user)
             project = await Project.create({ title, color, user })
             project.boardColumns = initialBoard.boardColumns
             project.boardColumnsOrderJson = initialBoard.boardColumnIds

@@ -1,7 +1,7 @@
-import { Task } from "../entity/User"
+import { BoardColumn, Task } from "../entity/User"
 import { Project, User } from "../entity/User"
 
-export const checkAccess = async (entity: Project | Task, user: User) => {
+export const checkAccess = async (entity: Project | Task | BoardColumn, user: User) => {
     // trivial case: user is owner of the given entity
     if (entity.user.id === user.id) {
         return true
@@ -12,10 +12,13 @@ export const checkAccess = async (entity: Project | Task, user: User) => {
     let project: Project
     switch (entity.constructor.name) {
         case Task.name:
-            project = (entity as Task).project
+            project = await (entity as Task).project
             break
         case Project.name:
             project = entity as Project
+            break
+        case BoardColumn.name:
+            project = await (entity as BoardColumn).project
             break
         default:
             throw new Error("serverError")
@@ -29,5 +32,3 @@ export const checkAccess = async (entity: Project | Task, user: User) => {
         throw new Error("accessDenied")
     }
 }
-
-// export const addCheckAccessMethod = (that: Project | Task) => (user) => checkAccess(that, user)

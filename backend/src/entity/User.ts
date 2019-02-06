@@ -93,22 +93,22 @@ export class ProjectInput {
 }
 
 export abstract class OwnerProjectEntity extends OwnerEntity {
-    @ManyToOne(type => Project)
+    @ManyToOne(type => Project, { lazy: true })
     @JoinColumn()
     project: Project
 }
 
 
 @Entity()
-export class BoardColumn extends BaseEntity {
+export class BoardColumn extends OwnerEntity {
 
-    static createDefaultBoard = async () => {
+    static createDefaultBoard = async (user) => {
         const boardColumns: BoardColumn[] = []
 
-        boardColumns.push(await BoardColumn.create({ title: "Idea", color: "#ccc", emoji: "bulb", tasks: [] }).save())
-        boardColumns.push(await BoardColumn.create({ title: "Open", color: "#ccc", emoji: "fire", tasks: [] }).save())
-        boardColumns.push(await BoardColumn.create({ title: "Progress", color: "#ccc", emoji: "stopwatch", tasks: [] }).save())
-        boardColumns.push(await BoardColumn.create({ title: "Done", color: "#ccc", emoji: "white_check_mark", tasks: [] }).save())
+        boardColumns.push(await BoardColumn.create({ title: "Idea", color: "#ccc", emoji: "bulb", tasks: [], user }).save())
+        boardColumns.push(await BoardColumn.create({ title: "Open", color: "#ccc", emoji: "fire", tasks: [], user }).save())
+        boardColumns.push(await BoardColumn.create({ title: "Progress", color: "#ccc", emoji: "stopwatch", tasks: [], user }).save())
+        boardColumns.push(await BoardColumn.create({ title: "Done", color: "#ccc", emoji: "white_check_mark", tasks: [], user }).save())
 
         const boardColumnIds: string[] = boardColumns.map(board => board.id)
         return { boardColumns, boardColumnIds: JSON.stringify(boardColumnIds) }
