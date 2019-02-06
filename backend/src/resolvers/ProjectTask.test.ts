@@ -57,6 +57,7 @@ describe("A loggedin user", async () => {
     })
 
     let task: Task
+    let firstBoardColumn: BoardColumn
     let nextBoardColumn: BoardColumn
     describe("should be able to", () => {
         it("create a task in a project", async () => {
@@ -74,11 +75,11 @@ describe("A loggedin user", async () => {
             })
             expect(task.title).toBe(userA.taskTitle)
 
-            const boardColumn = await task.boardColumn
+            firstBoardColumn = await task.boardColumn
 
-            nextBoardColumn = await (await boardColumn.project).getBoardByOrderIndex(1)
+            nextBoardColumn = await (await firstBoardColumn.project).getBoardByOrderIndex(1)
 
-            expect(boardColumn.title).toBe("Idea")
+            expect(firstBoardColumn.title).toBe("Idea")
 
         })
     })
@@ -147,6 +148,26 @@ describe("A loggedin user", async () => {
                     project: { title: userA.projectTitle }
                 }
             })
+        })
+
+        it("can move a task of another user to another board column", async () => {
+            const response = await gCall({
+                source: moveTask, cookie: userB.sessionToken,
+                variableValues: { taskid: task.id, targetboardcolumnid: firstBoardColumn.id }
+            })
+
+            expect(response).toMatchObject({
+                "data": {
+                    "moveTask": true,
+                }
+            })
+
+            const taskFetchedAgain = await Task.findOne({ where: { title: userA.taskTitle } })
+
+            const boardColumn = await taskFetchedAgain.boardColumn
+
+            expect(boardColumn.id).toBe(firstBoardColumn.id)
+
         })
     })
 
