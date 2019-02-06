@@ -30,6 +30,16 @@ mutation GrantAccess($email: String!, $projectid: String!){
 
 const projectsQuery = `query{projects{title}}`
 const projectQuery = `query Project($id: String!){project(id:$id){title}}`
+const projectQueryBig = `query Project($id: String!){
+    project(id:$id){
+        title
+        boardColumns{
+            tasks{
+                title
+            }
+        }
+    }
+}`
 
 const createTask = `mutation CreateTask($projectid: String!, $title: String!){
     createTask(projectid: $projectid, title: $title)
@@ -171,6 +181,18 @@ describe("A loggedin user", async () => {
             const boardColumn = await taskFetchedAgain.boardColumn
 
             expect(boardColumn.id).toBe(firstBoardColumn.id)
+
+        })
+
+        it("query a list of all boardColumns and all tickets of a project", async () => {
+            const response = await gCall({
+                source: projectQueryBig, cookie: userB.sessionToken, variableValues: { id: projectA.id }
+            })
+            expect(response).toMatchObject({
+                data: {
+                    project: { title: userA.projectTitle }
+                }
+            })
 
         })
     })

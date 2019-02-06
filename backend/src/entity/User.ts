@@ -59,6 +59,7 @@ export class Project extends OwnerEntity {
     @JoinTable()
     userAccess: Promise<User[]>
 
+    @Field(type => BoardColumn)
     @OneToMany(type => BoardColumn, boardColumn => boardColumn.project, { lazy: true })
     boardColumns: BoardColumn[]
 
@@ -115,18 +116,23 @@ export class BoardColumn extends OwnerEntity {
 
     }
 
+    @Field()
     @PrimaryGeneratedColumn("uuid")
     id: string
 
+    @Field()
     @Column()
     title: string
 
+    @Field()
     @Column()
     color: string
 
+    @Field()
     @Column()
     emoji: string
 
+    @Field()
     @OneToMany(type => Task, task => task.boardColumn, { lazy: true })
     tasks: Task[]
 

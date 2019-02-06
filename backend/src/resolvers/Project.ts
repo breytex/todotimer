@@ -20,7 +20,9 @@ export class ProjectResolver {
     @Query(returns => Project)
     async project(@Arg("id") id: string, @Ctx() { user }: MyContext) {
         const project = await Project.findOne({ id })
-        if (project && (await project.userAccess).filter(e => e.id === user.id).length > 0) {
+
+        if (project) {
+            checkAccess(project, user)
             return project
         } else {
             throw Error("notFound")
