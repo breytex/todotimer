@@ -65,4 +65,18 @@ export class TaskResolver {
     return true
   }
 
+  @Authorized()
+  @Mutation(returns => Boolean)
+  async moveTask(@Arg("taskid") taskid: string, @Arg("targetboardcolumnid") columnid: string, @Ctx() { user }: MyContext) {
+    const task = await Task.findOneOrFail({ where: { id: taskid } })
+    const boardColumn = await BoardColumn.findOneOrFail({ where: { id: columnid } })
+    await getConnection()
+      .createQueryBuilder()
+      .relation(Task, 'boardColumn')
+      .of(task).
+      set(boardColumn)
+
+    return true
+  }
+
 }

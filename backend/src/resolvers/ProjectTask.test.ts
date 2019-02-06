@@ -2,7 +2,7 @@ import { Connection } from "typeorm"
 import { loginUser } from '../test-utils/loginHelper'
 
 import * as faker from "faker"
-import { Project, Task } from "../entity/User"
+import { BoardColumn, Project, Task } from "../entity/User"
 import { gCall } from "../test-utils/gCall"
 import { createTypeormConn } from "../typeormConnection"
 let conn: Connection
@@ -35,6 +35,10 @@ const createTask = `mutation CreateTask($projectid: String!, $title: String!){
     createTask(projectid: $projectid, title: $title)
 }`
 
+const moveTask = `mutation MoveTask($taskid: String!, $targetboardcolumnid: String!){
+    moveTask(taskid: $taskid, targetboardcolumnid: $targetboardcolumnid)
+}`
+
 describe("A loggedin user", async () => {
 
     let projectA: Project
@@ -52,6 +56,8 @@ describe("A loggedin user", async () => {
         })
     })
 
+    let task: Task
+    let nextBoardColumn: BoardColumn
     describe("should be able to", () => {
         it("create a task in a project", async () => {
             const response = await gCall({
@@ -59,7 +65,7 @@ describe("A loggedin user", async () => {
                 variableValues: { title: userA.taskTitle, projectid: projectA.id }
             })
 
-            const task: Task = await Task.findOne({ where: { title: userA.taskTitle } })
+            task = await Task.findOne({ where: { title: userA.taskTitle } })
 
             expect(response).toMatchObject({
                 "data": {
@@ -67,6 +73,34 @@ describe("A loggedin user", async () => {
                 }
             })
             expect(task.title).toBe(userA.taskTitle)
+
+            const boardColumn = await task.boardColumn
+
+            nextBoardColumn = await (await boardColumn.project).getBoardByOrderIndex(1)
+
+            expect(boardColumn.title).toBe("Idea")
+
+        })
+    })
+
+    describe("should be able to", () => {
+        it("move a task to another board column", async () => {
+            const response = await gCall({
+                source: moveTask, cookie: userA.sessionToken,
+                variableValues: { taskid: task.id, targetboardcolumnid: nextBoardColumn.id }
+            })
+
+            expect(response).toMatchObject({
+                "data": {
+                    "moveTask": true,
+                }
+            })
+
+            const taskFetchedAgain = await Task.findOne({ where: { title: userA.taskTitle } })
+
+            const boardColumn = await taskFetchedAgain.boardColumn
+
+            expect(boardColumn.id).toBe(nextBoardColumn.id)
 
         })
     })

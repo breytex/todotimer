@@ -130,7 +130,7 @@ export class BoardColumn extends BaseEntity {
     @OneToMany(type => Task, task => task.boardColumn, { lazy: true })
     tasks: Task[]
 
-    @ManyToOne(type => Project)
+    @ManyToOne(type => Project, { lazy: true })
     project: Project
 
 }
