@@ -84,5 +84,13 @@ export class TaskResolver {
     return true
   }
 
+  @Authorized()
+  @Mutation(returns => Boolean)
+  async deleteTask(@Arg("taskid") taskid: string, @Ctx() { user }: MyContext) {
+    const task = await Task.findOneOrFail({ where: { id: taskid } })
+    await checkAccess(task, user)
+    await task.remove()
+    return true
+  }
 
 }

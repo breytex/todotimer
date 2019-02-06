@@ -39,6 +39,10 @@ const moveTask = `mutation MoveTask($taskid: String!, $targetboardcolumnid: Stri
     moveTask(taskid: $taskid, targetboardcolumnid: $targetboardcolumnid)
 }`
 
+const deleteTask = `mutation DeleteTask($taskid: String!){
+    deleteTask(taskid: $taskid)
+}`
+
 describe("A loggedin user", async () => {
 
     let projectA: Project
@@ -168,6 +172,25 @@ describe("A loggedin user", async () => {
 
             expect(boardColumn.id).toBe(firstBoardColumn.id)
 
+        })
+    })
+
+    describe("The owner of a task", () => {
+        it("who owns a task", async () => {
+            const response = await gCall({
+                source: deleteTask, cookie: userA.sessionToken,
+                variableValues: { taskid: task.id }
+            })
+
+            expect(response).toMatchObject({
+                "data": {
+                    "deleteTask": true,
+                }
+            })
+
+            const taskFetchedAgain = await Task.findOne({ where: { title: userA.taskTitle } })
+
+            expect(taskFetchedAgain).toBe(undefined)
         })
     })
 
