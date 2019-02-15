@@ -19,7 +19,7 @@ export class Task extends MyEntity {
     title: string
 
     @Field(type => User)
-    @ManyToOne(type => User)
+    @ManyToOne(type => User, { lazy: true })
     @JoinColumn()
     asignee: User
 

@@ -35,9 +35,15 @@ const projectQuery = `query Project($id: String!){project(id:$id){title}}`
 const projectQueryBig = `query Project($id: String!){
     project(id:$id){
         title
+        boardColumnsOrderJson
+        boardColumnsOrder
         boardColumns{
+            title
             tasks{
                 title
+                asignee{
+                    email
+                }
             }
         }
     }
@@ -189,11 +195,8 @@ describe("A loggedin user", async () => {
             const response = await gCall({
                 source: projectQueryBig, cookie: userB.sessionToken, variableValues: { id: projectA.id }
             })
-            expect(response).toMatchObject({
-                data: {
-                    project: { title: userA.projectTitle }
-                }
-            })
+            const ideaBoard = response.data.project.boardColumns.filter(e => e.title === "Idea")[0]
+            expect(ideaBoard.tasks[0].title).toBe(userA.taskTitle)
 
         })
     })

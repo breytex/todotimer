@@ -50,12 +50,13 @@ export class Project extends MyEntity {
     @JoinColumn()
     user: User
 
-    getBoardColumnsOrder() {
+    @Field(type => [String])
+    boardColumnsOrder() {
         return JSON.parse(this.boardColumnsOrderJson)
     }
 
     async getBoardByOrderIndex(index): Promise<BoardColumn> {
-        const boardColumnOrder = this.getBoardColumnsOrder()
+        const boardColumnOrder = this.boardColumnsOrder()
         if (index > boardColumnOrder.length) {
             throw Error("BoardOrderArrayOutOfBounce")
         }
