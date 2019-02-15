@@ -2,7 +2,9 @@ import { Connection } from "typeorm"
 import { loginUser } from '../test-utils/loginHelper'
 
 import * as faker from "faker"
-import { BoardColumn, Project, Task } from "../entity/User"
+import { BoardColumn } from "../entity/BoardColumn"
+import { Project } from "../entity/Project"
+import { Task } from "../entity/Task"
 import { gCall } from "../test-utils/gCall"
 import { createTypeormConn } from "../typeormConnection"
 let conn: Connection
@@ -126,7 +128,6 @@ describe("A loggedin user", async () => {
                 source: moveTask, cookie: userB.sessionToken,
                 variableValues: { taskid: task.id, targetboardcolumnid: nextBoardColumn.id }
             })
-            console.log(response)
             expect(response.errors[0].message).toBe("accessDenied")
         })
     })

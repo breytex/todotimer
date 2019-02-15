@@ -2,8 +2,6 @@ import { Connection } from "typeorm"
 import { loginUser } from './../test-utils/loginHelper'
 
 import * as faker from "faker"
-import { Login } from "../entity/Session"
-import { User } from "../entity/User"
 import { gCall } from "../test-utils/gCall"
 import { createTypeormConn } from "../typeormConnection"
 let conn: Connection

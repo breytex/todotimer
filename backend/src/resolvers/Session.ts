@@ -1,6 +1,6 @@
 import { Context } from 'graphql-yoga/dist/types'
 import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
-import { Project, User, UserInput } from "../entity/User"
+import { User, UserInput } from "../entity/User"
 import { checkIfNotExpired } from "../helpers/date"
 import log from "../helpers/log"
 import { Login, Session } from './../entity/Session'

@@ -1,8 +1,9 @@
 import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
 import { getConnection } from "typeorm"
 import { log } from "util"
-import { BoardColumn } from '../entity/User'
-import { Project, User } from "../entity/User"
+import { BoardColumn } from "../entity/BoardColumn"
+import { Project } from "../entity/Project"
+import { User } from "../entity/User"
 import { checkAccess } from '../helpers/access'
 import { MyContext } from './../types'
 

@@ -1,13 +1,20 @@
-import { Entity, JoinColumn, ManyToOne } from 'typeorm'
+import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { Generated } from 'typeorm'
 import { Column } from 'typeorm'
 import { MyEntity } from "./Entity"
-import { OwnerEntity, User } from './User'
+import { User } from './User'
 
-abstract class TokenData extends OwnerEntity {
+abstract class TokenData extends MyEntity {
+    @PrimaryGeneratedColumn("uuid")
+    id: string
+
     @Column()
     @Generated("uuid")
     token: string
+
+    @ManyToOne(type => User, { eager: true })
+    @JoinColumn()
+    user: User
 }
 
 @Entity()

@@ -1,5 +1,7 @@
-import { BoardColumn, Task } from "../entity/User"
-import { Project, User } from "../entity/User"
+import { BoardColumn } from "../entity/BoardColumn"
+import { Project } from "../entity/Project"
+import { Task } from "../entity/Task"
+import { User } from "../entity/User"
 
 export const checkAccess = async (entity: Project | Task | BoardColumn, user: User) => {
     // trivial case: user is owner of the given entity

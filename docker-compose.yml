@@ -15,10 +15,10 @@ services:
       - ./backend:/src
       - ./data/log:/var/log:rw
       - backendmodules:/src/node_modules
-    # links:
-    #   # - prisma
-    # depends_on:
-    #   # - prisma
+    links:
+      - mysql
+    depends_on:
+      - mysql
 
   nginx:
     image: nginx:1.12.2-alpine
