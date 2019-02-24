@@ -2,6 +2,7 @@ import { Connection } from "typeorm"
 import { loginUser } from '../test-utils/loginHelper'
 
 import * as faker from "faker"
+import { GraphQLError } from "graphql"
 import { BoardColumn } from "../entity/BoardColumn"
 import { Project } from "../entity/Project"
 import { Task } from "../entity/Task"
@@ -9,8 +10,8 @@ import { gCall } from "../test-utils/gCall"
 import { createTypeormConn } from "../typeormConnection"
 let conn: Connection
 
-const userA = { sessionToken: "", projectTitle: "Project from user A", taskTitle: "Task in Project form user A created by user A", email: faker.internet.email() }
-const userB = { sessionToken: "", projectTitle: "Project from user B", email: faker.internet.email() }
+const userA = { sessionToken: "", projectTitle: "Project from user A", projectShort: "A", taskTitle: "Task in Project form user A created by user A", email: faker.internet.email() }
+const userB = { sessionToken: "", projectTitle: "Project from user B", projectShort: "B", email: faker.internet.email() }
 beforeAll(async () => {
     conn = await createTypeormConn({ testing: true })
     userA.sessionToken = await loginUser(userA.email)
@@ -22,7 +23,7 @@ afterAll(async () => {
 
 
 const createProjectMutation = `
-mutation CreateProject($title: String!, $color: String!){createProject(title:$title, color:$color){title}}
+mutation CreateProject($projectData: ProjectInputCreate!){createProject(projectData:$projectData){title}}
 `
 
 const grantProjectAccessMutation = `
@@ -68,13 +69,21 @@ describe("A loggedin user", async () => {
         it("create a project", async () => {
             await gCall({
                 source: createProjectMutation, cookie: userA.sessionToken,
-                variableValues: { title: userA.projectTitle, color: "#000000" }
+                variableValues: { projectData: { title: userA.projectTitle, color: "#000000", short: userA.projectShort } }
             })
 
             projectA = await Project.findOne({ where: { title: userA.projectTitle } })
 
             expect(projectA.title).toBe(userA.projectTitle)
 
+        })
+
+        it("not create a project with a wrong short-field", async () => {
+            const response = await gCall({
+                source: createProjectMutation, cookie: userA.sessionToken,
+                variableValues: { projectData: { title: userA.projectTitle, color: "#000000", short: "123456" } }
+            })
+            expect(response).toMatchObject({ "data": null, "errors": [new GraphQLError("Argument Validation Error")] })
         })
     })
 

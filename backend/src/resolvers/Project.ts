@@ -2,7 +2,7 @@ import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
 import { getConnection } from "typeorm"
 import { log } from "util"
 import { BoardColumn } from "../entity/BoardColumn"
-import { Project } from "../entity/Project"
+import { Project, ProjectInputCreate } from "../entity/Project"
 import { User } from "../entity/User"
 import { checkAccess } from '../helpers/access'
 import { MyContext } from './../types'
@@ -32,11 +32,11 @@ export class ProjectResolver {
 
     @Authorized()
     @Mutation(returns => Project)
-    async createProject(@Arg("title") title: string, @Arg("color", { nullable: true }) color: string, @Ctx() { user }: MyContext) {
+    async createProject(@Arg("projectData") projectData: ProjectInputCreate, @Ctx() { user }: MyContext) {
         let project: Project
         try {
             const initialBoard = await BoardColumn.createDefaultBoard(user)
-            project = await Project.create({ title, color, user })
+            project = await Project.create({ ...projectData, user })
             project.boardColumns = initialBoard.boardColumns
             project.boardColumnsOrderJson = initialBoard.boardColumnIds
             await project.save()

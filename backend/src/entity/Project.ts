@@ -1,7 +1,7 @@
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
 
-import { MaxLength } from 'class-validator'
+import { MaxLength, MinLength } from 'class-validator'
 import { BoardColumn } from './BoardColumn'
 import { MyEntity } from './Entity'
 import { User } from './User'
@@ -28,6 +28,10 @@ export class Project extends MyEntity {
     @Field()
     @Column()
     title: string
+
+    @Field()
+    @Column({ length: 5 })
+    short: string
 
     @Field()
     @Column()
@@ -67,13 +71,30 @@ export class Project extends MyEntity {
 }
 
 @InputType()
-export class ProjectInput {
+export class ProjectInputCreate {
     @Field()
     @MaxLength(30)
     title: string
 
     @Field()
     @MaxLength(7)
+    color: string
+
+    @Field()
+    @MaxLength(5)
+    @MinLength(1)
+    short: string
+}
+
+@InputType()
+export class ProjectInputEdit {
+    @Field()
+    @MaxLength(30)
+    title?: string
+
+    @Field()
+    @MaxLength(7)
     color?: string
 }
+
 
