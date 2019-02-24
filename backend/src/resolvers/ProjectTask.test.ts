@@ -26,6 +26,10 @@ const createProjectMutation = `
 mutation CreateProject($projectData: ProjectInputCreate!){createProject(projectData:$projectData){title}}
 `
 
+const editProjectMutation = `
+mutation EditProject($projectid: String!, $projectData: ProjectInputEdit!){editProject(projectid:$projectid, projectData:$projectData)}
+`
+
 const grantProjectAccessMutation = `
 mutation GrantAccess($email: String!, $projectid: String!){
     grantProjectAccessByEmail(projectid: $projectid, email: $email)
@@ -66,16 +70,26 @@ describe("A loggedin user", async () => {
 
     let projectA: Project
     describe("should be able to", () => {
-        it("create a project", async () => {
+        it("create a project and edit it", async () => {
             await gCall({
                 source: createProjectMutation, cookie: userA.sessionToken,
-                variableValues: { projectData: { title: userA.projectTitle, color: "#000000", short: userA.projectShort } }
+                variableValues: { projectData: { title: "abc", color: "#ff0000", short: userA.projectShort } }
             })
 
-            projectA = await Project.findOne({ where: { title: userA.projectTitle } })
+            projectA = await Project.findOne({ where: { title: "abc" } })
 
+            expect(projectA.color).toBe("#ff0000")
+
+            const response = await gCall({
+                source: editProjectMutation, cookie: userA.sessionToken,
+                variableValues: { projectid: projectA.id, projectData: { title: userA.projectTitle, color: "#000000" } }
+            })
+
+            await projectA.reload()
+
+            expect(response).toMatchObject({ "data": { "editProject": true } })
+            expect(projectA.color).toBe("#000000")
             expect(projectA.title).toBe(userA.projectTitle)
-
         })
 
         it("not create a project with a wrong short-field", async () => {

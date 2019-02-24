@@ -2,7 +2,7 @@ import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
 import { getConnection } from "typeorm"
 import { log } from "util"
 import { BoardColumn } from "../entity/BoardColumn"
-import { Project, ProjectInputCreate } from "../entity/Project"
+import { Project, ProjectInputCreate, ProjectInputEdit } from "../entity/Project"
 import { User } from "../entity/User"
 import { checkAccess } from '../helpers/access'
 import { MyContext } from './../types'
@@ -47,6 +47,22 @@ export class ProjectResolver {
         }
 
         return project
+    }
+
+
+
+    @Authorized()
+    @Mutation(returns => Boolean)
+    async editProject(@Arg("projectid") id: string, @Arg("projectData") projectData: ProjectInputEdit, @Ctx() { user }: MyContext) {
+        const project: Project = await Project.findOneOrFail({ id })
+        checkAccess(project, user)
+        for (const key in projectData) {
+            if (projectData.hasOwnProperty(key)) {
+                project[key] = projectData[key]
+            }
+        }
+        await project.save()
+        return true
     }
 
     @Authorized()
