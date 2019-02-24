@@ -3,10 +3,15 @@ import { Project } from "../entity/Project"
 import { Task } from "../entity/Task"
 import { User } from "../entity/User"
 
-export const checkAccess = async (entity: Project | Task | BoardColumn, user: User) => {
+export const checkAccess = async (entity: Project | Task | BoardColumn, user: User, ownerAccessOnly = false) => {
     // trivial case: user is owner of the given entity
     if (entity.user.id === user.id) {
         return true
+    }
+    if (ownerAccessOnly) {
+        // if ownerAccesOnly is enabled and we reach this line, the access is denied
+        // because owner access was tested already above
+        return false
     }
 
     // cascading to the root project of the entity

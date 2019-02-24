@@ -65,6 +65,18 @@ export class ProjectResolver {
 
     @Authorized()
     @Mutation(returns => Boolean)
+    async deleteProject(@Arg("projectid") id: string, @Ctx() { user }: MyContext) {
+        const project: Project = await Project.findOneOrFail({ id })
+        checkAccess(project, user, true)
+        for (const boardColumn of await project.boardColumns) {
+            await boardColumn.remove()
+        }
+        await project.remove()
+        return true
+    }
+
+    @Authorized()
+    @Mutation(returns => Boolean)
     async toggleArchiveProject(@Arg("projectid") id: string, @Ctx() { user }: MyContext) {
         const project: Project = await Project.findOneOrFail({ id })
         checkAccess(project, user)

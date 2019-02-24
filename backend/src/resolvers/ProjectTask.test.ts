@@ -34,6 +34,10 @@ const toggleArchiveProjectMutation = `
 mutation ToggleArchiveProject($projectid: String!){toggleArchiveProject(projectid:$projectid)}
 `
 
+const deleteProjectMutation = `
+mutation DeleteProject($projectid: String!){deleteProject(projectid:$projectid)}
+`
+
 const grantProjectAccessMutation = `
 mutation GrantAccess($email: String!, $projectid: String!){
     grantProjectAccessByEmail(projectid: $projectid, email: $email)
@@ -94,6 +98,31 @@ describe("A loggedin user", async () => {
             expect(response).toMatchObject({ "data": { "editProject": true } })
             expect(projectA.color).toBe("#000000")
             expect(projectA.title).toBe(userA.projectTitle)
+        })
+
+        it("create a project and remove it", async () => {
+            const projectTitle = "abcdefg"
+            const response = await gCall({
+                source: createProjectMutation, cookie: userA.sessionToken,
+                variableValues: { projectData: { title: projectTitle, color: "#ff0000", short: "abc" } }
+            })
+
+            const projectNew = await Project.findOne({ where: { title: projectTitle } })
+
+            expect(response).toMatchObject({ "data": { "createProject": { "title": projectTitle } } })
+            expect(projectNew.color).toBe("#ff0000")
+
+            const responseDelete = await gCall({
+                source: deleteProjectMutation, cookie: userA.sessionToken,
+                variableValues: { projectid: projectNew.id }
+            })
+
+            expect(responseDelete).toMatchObject({ "data": { "deleteProject": true } })
+
+            const projectNewFindAgain = await Project.findOne({ where: { title: projectTitle } })
+
+            expect(projectNewFindAgain).toBeUndefined()
+
         })
 
         it("not create a project with a wrong short-field", async () => {
