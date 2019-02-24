@@ -9,7 +9,7 @@
     "test": "npm run db:setup && jest",
     "test-watch": "npm run db:setup && jest --watchAll"
   },
-  "author": "",
+  "author": "Fabian Schulze <breytex@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@types/node": "^10.12.18",

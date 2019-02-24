@@ -7,7 +7,7 @@ ADD ./backend/package.json /src/package.json
 WORKDIR /src
 
 
-RUN npm i
+RUN npm ci
 RUN npm i -g typescript
 RUN npm i -g ts-node
 RUN npm i -g graphql-cli
