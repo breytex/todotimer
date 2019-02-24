@@ -2,7 +2,7 @@ import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
 import { getConnection } from "typeorm"
 import { BoardColumn } from "../entity/BoardColumn"
 import { Project } from "../entity/Project"
-import { Task } from "../entity/Task"
+import { Task, TaskInputCreate, TaskInputEdit } from "../entity/Task"
 import { User } from "../entity/User"
 import { checkAccess } from "../helpers/access"
 import { MyContext } from './../types'
@@ -36,7 +36,7 @@ export class TaskResolver {
 
   @Authorized()
   @Mutation(returns => Boolean)
-  async createTask(@Arg("projectid") projectid: string, @Arg("title") title: string, @Ctx() { user }: MyContext) {
+  async createTask(@Arg("projectid") projectid: string, @Arg("taskData") data: TaskInputCreate, @Ctx() { user }: MyContext) {
     try {
       const project = await Project.findOneOrFail(projectid) // check if project exists
       console.log(project)
@@ -44,9 +44,9 @@ export class TaskResolver {
         let task
         if ((await project.userAccess).length === 0) {
           // assign all tasks to the user itself, if no other users are invited to the project
-          task = await Task.create({ title, user, project, asignee: user })
+          task = await Task.create({ ...data, user, project, asignee: user })
         } else {
-          task = await Task.create({ title, user, project })
+          task = await Task.create({ ...data, user, project })
         }
 
         await task.save()
@@ -64,6 +64,21 @@ export class TaskResolver {
       console.error(e)
       throw Error(e)
     }
+    return true
+  }
+
+
+  @Authorized()
+  @Mutation(returns => Boolean)
+  async editTask(@Arg("taskid") id: string, @Arg("taskData") data: TaskInputEdit, @Ctx() { user }: MyContext) {
+    const task = await Task.findOneOrFail({ id })
+    checkAccess(task, user)
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        task[key] = data[key]
+      }
+    }
+    await task.save()
     return true
   }
 

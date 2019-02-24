@@ -2,6 +2,7 @@ import { Connection } from "typeorm"
 import { loginUser } from '../test-utils/loginHelper'
 
 import * as faker from "faker"
+import { watchFile } from "fs"
 import { GraphQLError } from "graphql"
 import { BoardColumn } from "../entity/BoardColumn"
 import { Project } from "../entity/Project"
@@ -62,8 +63,12 @@ const projectQueryBig = `query Project($id: String!){
     }
 }`
 
-const createTask = `mutation CreateTask($projectid: String!, $title: String!){
-    createTask(projectid: $projectid, title: $title)
+const createTask = `mutation CreateTask($projectid: String!, $taskData: TaskInputCreate!){
+    createTask(projectid: $projectid, taskData: $taskData)
+}`
+
+const editTask = `mutation EditTask($taskid: String!, $taskData: TaskInputEdit!){
+    editTask(taskid: $taskid, taskData: $taskData)
 }`
 
 const moveTask = `mutation MoveTask($taskid: String!, $targetboardcolumnid: String!){
@@ -138,26 +143,42 @@ describe("A loggedin user", async () => {
     let firstBoardColumn: BoardColumn
     let nextBoardColumn: BoardColumn
     describe("should be able to", () => {
-        it("create a task in a project", async () => {
+        it("create a task in a project and edit it", async () => {
+            const tempTitle = "temp task title"
             const response = await gCall({
                 source: createTask, cookie: userA.sessionToken,
-                variableValues: { title: userA.taskTitle, projectid: projectA.id }
+                variableValues: { taskData: { title: tempTitle }, projectid: projectA.id }
             })
 
-            task = await Task.findOne({ where: { title: userA.taskTitle } })
+            task = await Task.findOne({ where: { title: tempTitle } })
 
             expect(response).toMatchObject({
                 "data": {
                     "createTask": true,
                 }
             })
-            expect(task.title).toBe(userA.taskTitle)
+            expect(task.title).toBe(tempTitle)
 
             firstBoardColumn = await task.boardColumn
 
             nextBoardColumn = await (await firstBoardColumn.project).getBoardByOrderIndex(1)
 
             expect(firstBoardColumn.title).toBe("Idea")
+
+            const responseEdit = await gCall({
+                source: editTask, cookie: userA.sessionToken,
+                variableValues: { taskData: { title: userA.taskTitle }, taskid: task.id }
+            })
+
+            expect(responseEdit).toMatchObject({
+                "data": {
+                    "editTask": true,
+                }
+            })
+
+            await task.reload()
+
+            expect(task.title).toBe(userA.taskTitle)
 
         })
 

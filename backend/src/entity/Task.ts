@@ -1,4 +1,4 @@
-import { MaxLength } from 'class-validator'
+import { Max, MaxLength, Min } from 'class-validator'
 import { Field, ID, InputType, ObjectType } from 'type-graphql'
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm'
 import { JoinColumn } from 'typeorm'
@@ -17,6 +17,14 @@ export class Task extends MyEntity {
     @Field()
     @Column()
     title: string
+
+    @Field()
+    @Column({ default: "" })
+    text: string
+
+    @Field()
+    @Column({ default: 2 })
+    priority: number
 
     @Field(type => User)
     @ManyToOne(type => User, { lazy: true })
@@ -37,8 +45,31 @@ export class Task extends MyEntity {
 }
 
 @InputType()
-export class TaskInput {
+export class TaskInputCreate {
     @Field()
-    @MaxLength(30)
+    @MaxLength(100)
     title: string
+
+    @Field({ nullable: true })
+    text?: string
+
+    @Field({ nullable: true })
+    @Min(0)
+    @Max(4)
+    priority?: number
+}
+
+@InputType()
+export class TaskInputEdit {
+    @Field({ nullable: true })
+    @MaxLength(100)
+    title?: string
+
+    @Field({ nullable: true })
+    text?: string
+
+    @Field({ nullable: true })
+    @Min(0)
+    @Max(4)
+    priority?: number
 }

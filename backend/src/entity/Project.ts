@@ -92,11 +92,11 @@ export class ProjectInputCreate {
 
 @InputType()
 export class ProjectInputEdit {
-    @Field()
+    @Field({ nullable: true })
     @MaxLength(30)
     title?: string
 
-    @Field()
+    @Field({ nullable: true })
     @MaxLength(7)
     color?: string
 }
