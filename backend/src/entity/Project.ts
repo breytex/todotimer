@@ -34,6 +34,10 @@ export class Project extends MyEntity {
     short: string
 
     @Field()
+    @Column({ default: false })
+    archived: boolean
+
+    @Field()
     @Column()
     color?: string
 

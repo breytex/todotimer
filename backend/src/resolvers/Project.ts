@@ -49,8 +49,6 @@ export class ProjectResolver {
         return project
     }
 
-
-
     @Authorized()
     @Mutation(returns => Boolean)
     async editProject(@Arg("projectid") id: string, @Arg("projectData") projectData: ProjectInputEdit, @Ctx() { user }: MyContext) {
@@ -61,6 +59,16 @@ export class ProjectResolver {
                 project[key] = projectData[key]
             }
         }
+        await project.save()
+        return true
+    }
+
+    @Authorized()
+    @Mutation(returns => Boolean)
+    async toggleArchiveProject(@Arg("projectid") id: string, @Ctx() { user }: MyContext) {
+        const project: Project = await Project.findOneOrFail({ id })
+        checkAccess(project, user)
+        project.archived = !project.archived
         await project.save()
         return true
     }

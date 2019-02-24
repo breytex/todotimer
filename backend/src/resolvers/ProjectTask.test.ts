@@ -30,6 +30,10 @@ const editProjectMutation = `
 mutation EditProject($projectid: String!, $projectData: ProjectInputEdit!){editProject(projectid:$projectid, projectData:$projectData)}
 `
 
+const toggleArchiveProjectMutation = `
+mutation ToggleArchiveProject($projectid: String!){toggleArchiveProject(projectid:$projectid)}
+`
+
 const grantProjectAccessMutation = `
 mutation GrantAccess($email: String!, $projectid: String!){
     grantProjectAccessByEmail(projectid: $projectid, email: $email)
@@ -126,6 +130,24 @@ describe("A loggedin user", async () => {
 
             expect(firstBoardColumn.title).toBe("Idea")
 
+        })
+
+        it("archive and un-archive a project", async () => {
+            const response = await gCall({
+                source: toggleArchiveProjectMutation, cookie: userA.sessionToken,
+                variableValues: { projectid: projectA.id }
+            })
+            await projectA.reload()
+            expect(response).toMatchObject({ "data": { "toggleArchiveProject": true } })
+            expect(projectA.archived).toBe(true)
+
+            await gCall({
+                source: toggleArchiveProjectMutation, cookie: userA.sessionToken,
+                variableValues: { projectid: projectA.id }
+            })
+
+            await projectA.reload()
+            expect(projectA.archived).toBe(false)
         })
     })
 
