@@ -1,15 +1,17 @@
 import React from 'react'
 import { Button } from '@blueprintjs/core'
-import Layout from '../components/global/Layout'
+import Secure from '../components/global/Secure'
+import { checkLoggedinUser } from '../lib/checkLoggedinUser'
 
 function Home() {
   return (
-    <Layout>
+    <Secure>
       <Button intent="danger" icon="refresh">
         test
       </Button>
-    </Layout>
+    </Secure>
   )
 }
 
+Home.getInitialProps = checkLoggedinUser
 export default Home

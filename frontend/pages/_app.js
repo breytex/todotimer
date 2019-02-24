@@ -2,8 +2,10 @@ import App, { Container } from 'next/app'
 import Head from 'next/head'
 import React from 'react'
 import '../global.scss'
+import { ApolloProvider } from 'react-apollo-hooks'
+import withApollo from '../lib/withApollo'
 
-export default class MyApp extends App {
+class MyApp extends App {
   static async getInitialProps({ Component, router, ctx }) {
     let pageProps = {}
 
@@ -15,15 +17,19 @@ export default class MyApp extends App {
   }
 
   render() {
-    const { Component, pageProps } = this.props
+    const { Component, pageProps, apollo } = this.props
 
     return (
       <Container>
         <Head>
           <title>LitTodo</title>
         </Head>
-        <Component {...pageProps} />
+        <ApolloProvider client={apollo}>
+          <Component {...pageProps} apolloClient={apollo} />
+        </ApolloProvider>
       </Container>
     )
   }
 }
+
+export default withApollo(MyApp)

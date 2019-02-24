@@ -23,7 +23,7 @@ export class User extends MyEntity {
 @InputType()
 export class UserInput {
     @Field()
-    @MaxLength(30)
+    @IsEmail()
     email: string
 }
 
