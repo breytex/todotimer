@@ -3,6 +3,7 @@ FROM node:11 as build
 EXPOSE 4000
 
 ADD ./backend/package.json /src/package.json
+ADD ./backend/package-lock.json /src/package-lock.json
 
 WORKDIR /src
 
