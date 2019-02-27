@@ -1,7 +1,10 @@
 import App, { Container } from 'next/app'
 import Head from 'next/head'
 import React from 'react'
+import 'normalize.css'
 import '../global.scss'
+import '../src/css/semantic/semantic.min.css'
+
 import { ApolloProvider } from 'react-apollo-hooks'
 import withApollo from '../lib/withApollo'
 

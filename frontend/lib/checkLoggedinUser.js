@@ -1,9 +1,19 @@
 import gql from 'graphql-tag'
 import redirect from './redirect'
 
+const user = { id: null, email: null }
+
+export const setUser = newUser => {
+  for (let key in user) {
+    if (user.hasOwnProperty(key)) {
+      user[key] = newUser[key]
+    }
+  }
+}
+
 export const checkLoggedinUser = async context => {
-  context.apolloClient
-    .query({
+  try {
+    await context.apolloClient.query({
       query: gql`
         query getLoggedin {
           loggedinUser {
@@ -13,10 +23,8 @@ export const checkLoggedinUser = async context => {
         }
       `,
     })
-    .then(({ data }) => {
-      return { loggedinUser: data }
-    })
-    .catch(() => {
-      redirect(context, '/signin')
-    })
+    return {}
+  } catch (e) {
+    redirect(context, '/signin')
+  }
 }

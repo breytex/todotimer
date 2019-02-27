@@ -1,14 +1,24 @@
 const withSass = require('@zeit/next-sass')
 const withPlugins = require('next-compose-plugins')
 const withCSS = require('@zeit/next-css')
-const withFonts = require('next-fonts')
 
-const sassConfig = {
-  cssLoaderOptions: {
-    importLoaders: 1,
-    localIdentName: '[local]___[name]___[hash:base64:5]',
+const cssConfig = {
+  target: 'serverless',
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(png|svg|eot|otf|ttf|woff|woff2)$/,
+      use: {
+        loader: 'url-loader',
+        options: {
+          limit: 8192,
+          publicPath: '/_next/static/',
+          outputPath: 'static/',
+          name: '[name].[ext]',
+        },
+      },
+    })
+    return config
   },
 }
 
-const cssConfig = {}
-module.exports = withPlugins([[withSass, sassConfig], [withCSS, cssConfig], [withFonts]])
+module.exports = withPlugins([[withCSS, cssConfig], [withSass]])

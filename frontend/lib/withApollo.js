@@ -1,11 +1,13 @@
 import withApollo from 'next-with-apollo'
 import ApolloClient, { InMemoryCache } from 'apollo-boost'
-import { GRAPHQL_URL } from '../configs'
+import { getBackendUrl } from '../configs'
 
 export default withApollo(
-  ({ ctx, headers, initialState }) =>
-    new ApolloClient({
-      uri: GRAPHQL_URL,
+  ({ ctx, headers, initialState }) => {
+    return new ApolloClient({
+      uri: getBackendUrl(),
       cache: new InMemoryCache().restore(initialState || {}),
     })
+  }
+
 )
