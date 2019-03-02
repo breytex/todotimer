@@ -7,6 +7,7 @@ import '../src/css/semantic/semantic.min.css'
 
 import { ApolloProvider } from 'react-apollo-hooks'
 import withApollo from '../lib/withApollo'
+import { UserContextProvider } from '../contexts/user'
 
 class MyApp extends App {
   static async getInitialProps({ Component, router, ctx }) {
@@ -28,7 +29,9 @@ class MyApp extends App {
           <title>LitTodo</title>
         </Head>
         <ApolloProvider client={apollo}>
-          <Component {...pageProps} apolloClient={apollo} />
+          <UserContextProvider>
+            <Component {...pageProps} apolloClient={apollo} />
+          </UserContextProvider>
         </ApolloProvider>
       </Container>
     )

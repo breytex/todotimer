@@ -3,6 +3,7 @@ import gql from 'graphql-tag'
 import { Input, Icon, Button } from 'semantic-ui-react'
 import { useMutation } from '../hooks/useMutation'
 import redirect from '../lib/redirect'
+import Layout from '../components/global/Layout'
 
 const REQUEST_SIGNIN = gql`
   mutation RequestSignin($user: UserInput!) {
@@ -10,47 +11,14 @@ const REQUEST_SIGNIN = gql`
   }
 `
 
-function RequestSignIn({ onRequstedLogin }) {
-  const [email, setEmail] = useState('')
-  const [requestSignin, { error, data }] = useMutation(REQUEST_SIGNIN)
-  if (data !== null) {
-    onRequstedLogin()
-  }
-  return (
-    <React.Fragment>
-      {error !== null && <h1>Please enter a valid email address!</h1>}
-      <Input
-        iconPosition="left"
-        placeholder="Email"
-        value={email}
-        onChange={e => {
-          setEmail(e.target.value)
-        }}
-      >
-        <Icon name="at" />
-        <input />
-      </Input>
-      <Button
-        onClick={() => {
-          requestSignin({
-            variables: { user: { email } },
-          })
-        }}
-      >
-        Login / SignUp
-      </Button>
-    </React.Fragment>
-  )
-}
-
-function Signin({ query, res }) {
+function Signin() {
   const [email, setEmail] = useState('')
   const [requestSignin, { error, data }] = useMutation(REQUEST_SIGNIN)
   if (data !== null) {
     redirect({}, '/validate')
   }
   return (
-    <React.Fragment>
+    <Layout>
       {error !== null && <h1>Please enter a valid email address!</h1>}
       <Input
         iconPosition="left"
@@ -72,7 +40,7 @@ function Signin({ query, res }) {
       >
         Login / SignUp
       </Button>
-    </React.Fragment>
+    </Layout>
   )
 }
 

@@ -1,21 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import gql from 'graphql-tag'
 import { Input, Icon, Button } from 'semantic-ui-react'
 import { useMutation } from '../hooks/useMutation'
 import redirect from '../lib/redirect'
+import { UserContext } from '../contexts/user'
+import Layout from '../components/global/Layout';
 
-const SIGNIN = gql`
+const SIGNIN = gql `
   mutation Signin($token: String!) {
-    signIn(token: $token)
+    signIn(token: $token) {
+      email
+      id
+    }
   }
 `
 
-function Validate({ onTokenSent }) {
+function Validate() {
   const [token, setToken] = useState('')
   const [signIn, { error, data, loading, called }] = useMutation(SIGNIN)
+  const user = useContext(UserContext)
+
   console.log(data)
   if (data !== null) {
     console.log('success')
+    user.setUser(data.signIn)
     redirect({}, '/')
   }
   if (loading) {
@@ -24,7 +32,7 @@ function Validate({ onTokenSent }) {
     return <h1>Error</h1>
   } else {
     return (
-      <React.Fragment>
+      <Layout>
         <Input
           iconPosition="left"
           placeholder="Email"
@@ -36,23 +44,10 @@ function Validate({ onTokenSent }) {
           <Icon name="at" /> <input />
         </Input>
         <Button onClick={() => signIn({ variables: { token } })}> Login </Button>
-      </React.Fragment>
+      </Layout>
     )
   }
 }
-
-// function VerifyToken(token, res) {
-
-//   signIn({ variables: { token } })
-
-//   if (data) {
-//     redirect({}, '/')
-//   } else if (loading) {
-//     return <h1>Loading</h1>
-//   } else {
-//     return <h1>error</h1>
-//   }
-// }
 
 Validate.getInitialProps = async context => {
   if (context.query.token) {

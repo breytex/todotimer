@@ -4,15 +4,15 @@ import Link from 'next/link'
 import { checkLoggedinUser } from '../lib/checkLoggedinUser'
 import Layout from '../components/global/Layout'
 
-function Home(props) {
+function Test(props) {
   return (
     <Layout user={props.user}>
-      <Link href="/test">
-        <Button primary>test</Button>
+      <Link href="/">
+        <Button primary>index</Button>
       </Link>
     </Layout>
   )
 }
 
-Home.getInitialProps = checkLoggedinUser
-export default Home
+Test.getInitialProps = checkLoggedinUser
+export default Test

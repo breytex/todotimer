@@ -1,30 +1,27 @@
 import gql from 'graphql-tag'
 import redirect from './redirect'
 
-const user = { id: null, email: null }
-
-export const setUser = newUser => {
-  for (let key in user) {
-    if (user.hasOwnProperty(key)) {
-      user[key] = newUser[key]
-    }
-  }
-}
-
 export const checkLoggedinUser = async context => {
-  try {
-    await context.apolloClient.query({
-      query: gql`
-        query getLoggedin {
-          loggedinUser {
-            id
-            email
+  if (!process.browser) {
+    console.log('fetching initial user...')
+    // fetch user on initial page load only (server side)
+    // assuming a user is already fetched when the app runs client-side
+    try {
+      const response = await context.apolloClient.query({
+        query: gql`
+          query getLoggedin {
+            loggedinUser {
+              id
+              email
+            }
           }
-        }
-      `,
-    })
-    return {}
-  } catch (e) {
-    redirect(context, '/signin')
+        `,
+      })
+      return { user: response.data.loggedinUser }
+    } catch (e) {
+      redirect(context, '/signin')
+    }
+  } else {
+    return { user: null }
   }
 }
