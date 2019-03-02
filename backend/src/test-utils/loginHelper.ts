@@ -1,6 +1,6 @@
 import * as faker from "faker"
 import { User } from "../entity/User"
-import { Login } from './../entity/Session'
+import { Login, Session } from './../entity/Session'
 import { gCall } from './gCall'
 
 
@@ -11,7 +11,9 @@ mutation Register($email: String!) {
 `
 const loginMutation = `
 mutation Login($token: String!) {
-    signIn(token:$token)
+    signIn(token:$token){
+        email
+    }
 }
 `
 
@@ -36,7 +38,10 @@ export const loginUser = async (email = faker.internet.email()) => {
             token,
         }
     })
-    const sessionToken = (loginResponse as any).data.signIn
+    expect(loginResponse.data.signIn.email).toBe(email)
 
-    return sessionToken
+    const user = await User.findOneOrFail({ email })
+    const session = await Session.findOneOrFail({ user })
+
+    return session.token
 }

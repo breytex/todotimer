@@ -38,7 +38,7 @@ export class SessionResolver {
         return true
     }
 
-    @Mutation(returns => String)
+    @Mutation(returns => User)
     async signIn(@Arg("token") token: string, @Ctx() { response }: MyContext) {
         const login: Login = await Login.findOne({ token }, { relations: ["user"] })
         if (login && checkIfNotExpired(login.createdAt, 10)) {
@@ -49,7 +49,7 @@ export class SessionResolver {
             let session = await Session.create({ user })
             session = await session.save()
             response.cookie(SESSION_COOKIE_NAME, session.token, { maxAge: 2592000, httpOnly: false })
-            return session.token
+            return user
         } else {
             throw new Error("invalid-token")
         }
