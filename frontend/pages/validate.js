@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import gql from 'graphql-tag'
 import { Input, Icon, Button } from 'semantic-ui-react'
-import { ApolloClient } from 'apollo-client'
 import { useMutation } from '../hooks/useMutation'
 import redirect from '../lib/redirect'
 
@@ -14,6 +13,7 @@ const SIGNIN = gql`
 function Validate({ onTokenSent }) {
   const [token, setToken] = useState('')
   const [signIn, { error, data, loading, called }] = useMutation(SIGNIN)
+  console.log(data)
   if (data !== null) {
     console.log('success')
     redirect({}, '/')
