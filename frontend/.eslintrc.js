@@ -11,7 +11,7 @@ module.exports = {
   },
 
   "plugins": [
-    "react", "prettier"
+    "react", "prettier", "react-hooks"
   ],
   "env": {
     "browser": true,
@@ -27,6 +27,8 @@ module.exports = {
     "semi": [
       2, "never"
     ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "react/jsx-no-bind": [
       "error", {
         "allowArrowFunctions": true,
