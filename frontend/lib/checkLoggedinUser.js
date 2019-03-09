@@ -19,7 +19,7 @@ export const checkLoggedinUser = async context => {
       })
       return { user: response.data.loggedinUser }
     } catch (e) {
-      redirect(context, '/signin')
+      redirect(context, '/account')
     }
   } else {
     return { user: null }
