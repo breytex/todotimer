@@ -12,7 +12,7 @@ const SIGNOUT = gql`
 
 export default function Signout() {
   return (
-    <Layout style={{ textAlign: 'center' }}>
+    <Layout style={{ textAlign: 'center' }} user={{ email: null, id: null }}>
       <Header as="h2" icon textAlign="center">
         <Icon name="sign out" />
         <Header.Content>

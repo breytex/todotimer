@@ -22,6 +22,6 @@ export const checkLoggedinUser = async context => {
       redirect(context, '/account')
     }
   } else {
-    return { user: null }
+    return {}
   }
 }

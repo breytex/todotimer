@@ -24,7 +24,7 @@ function LoggedInLayout(props) {
       </Sidebar>
 
       <Sidebar.Pusher>
-        <Navbar onSidebarButtonClicked={() => setSidebar(!sidebarVisible)} />
+        <Navbar user={props.user} onSidebarButtonClicked={() => setSidebar(!sidebarVisible)} />
 
         <Wrapper {...props}>{props.children}</Wrapper>
       </Sidebar.Pusher>
@@ -51,13 +51,13 @@ function Wrapper(props) {
 
 export default function Layout(props) {
   const user = useContext(UserContext)
-  if (typeof props.user === 'undefined') {
+  if (typeof props.user !== 'undefined') {
     user.setUser(props.user)
   }
 
   if (user.email) {
-    return <LoggedInLayout {...props} />
+    return <LoggedInLayout {...props} user={user} />
   } else {
-    return <LoggedOutLayout {...props} />
+    return <LoggedOutLayout {...props} user={{ email: null, id: null }} />
   }
 }

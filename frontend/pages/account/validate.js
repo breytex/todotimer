@@ -11,7 +11,7 @@ import CodeInput from '../../components/semantic/CodeInput'
 import DelayedLoader from '../../components/semantic/DelayedLoader'
 import { useDelay } from '../../hooks/useDelay'
 
-const SIGNIN = gql`
+const SIGNIN = gql `
   mutation Signin($token: String!) {
     signIn(token: $token) {
       email

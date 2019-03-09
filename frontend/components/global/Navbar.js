@@ -1,22 +1,20 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Menu, Dropdown, Icon } from 'semantic-ui-react'
-import { UserContext } from '../../contexts/user'
 import redirect from '../../lib/redirect'
 
 export default function Navbar(props) {
-  const user = useContext(UserContext)
-
+  const { user } = props
   return (
     <Menu text size="huge" style={{ padding: '0em 2em' }}>
-      {!user.email && (
+      {user && (
         <Menu.Item onClick={props.onSidebarButtonClicked}>
-          <Icon name="bars" style={{ opacity: user.email ? '1' : '0' }} />
+          <Icon name="bars" />
         </Menu.Item>
       )}
 
       <Menu.Item header>LitTodo</Menu.Item>
 
-      {user.email && (
+      {user && (
         <Menu.Menu position="right">
           <Dropdown
             item
