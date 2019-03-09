@@ -60,7 +60,7 @@ export default function CodeInput({
   }
 
   return (
-    <div style={wrapperStyle} className="semantic-digit-input">
+    <div style={wrapperStyle} className="semantic-code-input">
       {initialValues.map((_, index) => (
         <Input key={index} type={type} disabled={disabled}>
           <input maxLength="1" ref={handleRef(index)} onKeyDown={onKeyUp(index)} value={input[index]} />
