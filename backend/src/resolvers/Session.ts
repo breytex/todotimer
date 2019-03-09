@@ -3,6 +3,7 @@ import { Arg, Authorized, Ctx, Mutation, Query } from "type-graphql"
 import { User, UserInput } from "../entity/User"
 import { checkIfNotExpired } from "../helpers/date"
 import log from "../helpers/log"
+import randomLoginCode from '../helpers/random'
 import { Login, Session } from './../entity/Session'
 import { MyContext } from './../types'
 
@@ -31,7 +32,7 @@ export class SessionResolver {
         await Login.remove(oldLogins)
 
         // create new login token 
-        let login = await Login.create({ user })
+        let login = await Login.create({ user, token: randomLoginCode() })
         login = await login.save()
 
         log("sign in using this token: \r\n" + login.token, { lines: true })

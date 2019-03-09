@@ -8,9 +8,7 @@ abstract class TokenData extends MyEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column()
-    @Generated("uuid")
-    token: string
+
 
     @ManyToOne(type => User, { eager: true })
     @JoinColumn()
@@ -18,7 +16,14 @@ abstract class TokenData extends MyEntity {
 }
 
 @Entity()
-export class Session extends TokenData { }
+export class Session extends TokenData {
+    @Column()
+    @Generated("uuid")
+    token: string
+}
 
 @Entity()
-export class Login extends TokenData { }
+export class Login extends TokenData {
+    @Column()
+    token: string
+}
