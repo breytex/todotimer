@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
-import { Card, Sidebar, Menu, Icon, Button, Segment } from 'semantic-ui-react'
-import { UserContext, UserContextProvider } from '../../contexts/user'
+import { Sidebar, Menu, Icon, Segment } from 'semantic-ui-react'
+import { UserContext } from '../../contexts/user'
+import Navbar from './Navbar'
 
 function LoggedInLayout(props) {
   const [sidebarVisible, setSidebar] = useState(false)
@@ -23,38 +24,40 @@ function LoggedInLayout(props) {
       </Sidebar>
 
       <Sidebar.Pusher>
-        <Button
-          style={{ marginTop: '1em', marginLeft: '1em' }}
-          basic
-          icon="bars"
-          onClick={() => setSidebar(!sidebarVisible)}
-        />
+        <Navbar onSidebarButtonClicked={() => setSidebar(!sidebarVisible)} />
 
-        <CardLayout>{props.children}</CardLayout>
+        <Wrapper {...props}>{props.children}</Wrapper>
       </Sidebar.Pusher>
     </Sidebar.Pushable>
   )
 }
 
-function CardLayout(props) {
+function LoggedOutLayout(props) {
   return (
-    <div className="container">
-      <Card fluid>
-        <Card.Content>{props.children}</Card.Content>
-      </Card>
+    <React.Fragment>
+      <Navbar />
+      <Wrapper {...props}>{props.children}</Wrapper>
+    </React.Fragment>
+  )
+}
+
+function Wrapper(props) {
+  return (
+    <div className="container" style={props.style}>
+      {props.children}
     </div>
   )
 }
 
 export default function Layout(props) {
   const user = useContext(UserContext)
-  if (props.user) {
+  if (typeof props.user === 'undefined') {
     user.setUser(props.user)
   }
 
   if (user.email) {
     return <LoggedInLayout {...props} />
   } else {
-    return <CardLayout {...props} />
+    return <LoggedOutLayout {...props} />
   }
 }
