@@ -30,6 +30,7 @@ export default function CodeInput({
   })
 
   const onKeyUp = index => event => {
+    if (disabled) return
     let char = String.fromCharCode(event.keyCode)
 
     if (event.keyCode === 8) {

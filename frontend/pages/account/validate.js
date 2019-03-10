@@ -11,7 +11,7 @@ import CodeInput from '../../components/semantic/CodeInput'
 import DelayedLoader from '../../components/semantic/DelayedLoader'
 import { useDelay } from '../../hooks/useDelay'
 
-const SIGNIN = gql `
+const SIGNIN = gql`
   mutation Signin($token: String!) {
     signIn(token: $token) {
       email
@@ -42,7 +42,7 @@ function Validate() {
             <Header.Subheader>Click the magic link in the email, or enter the security code below.</Header.Subheader>
           </Header.Content>
         </Header>
-        <CodeInput length={6} onFilled={onFilled} />
+        <CodeInput length={6} onFilled={onFilled} disabled={data !== null || loading} />
         {loading && <DelayedLoader />}
         {error && (
           <Message

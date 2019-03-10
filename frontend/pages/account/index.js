@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import gql from 'graphql-tag'
-import { Input, Icon, Button, Header } from 'semantic-ui-react'
+import { Input, Icon, Button, Header, Message } from 'semantic-ui-react'
 import { useMutation } from '../../hooks/useMutation'
 import redirect from '../../lib/redirect'
 import Layout from '../../components/global/Layout'
 import Card from '../../components/global/Card'
+import DelayedLoader from '../../components/semantic/DelayedLoader';
 
-const REQUEST_SIGNIN = gql`
+const REQUEST_SIGNIN = gql `
   mutation RequestSignin($user: UserInput!) {
     requestSignIn(user: $user)
   }
@@ -14,7 +15,7 @@ const REQUEST_SIGNIN = gql`
 
 function Signin() {
   const [email, setEmail] = useState('')
-  const [requestSignin, { error, data }] = useMutation(REQUEST_SIGNIN)
+  const [requestSignin, { error, data, loading }] = useMutation(REQUEST_SIGNIN)
 
   if (data !== null) {
     redirect({}, '/account/validate')
@@ -30,7 +31,7 @@ function Signin() {
             <Header.Subheader>{"It's"} free!</Header.Subheader>
           </Header.Content>
         </Header>
-        {error !== null && <h1>Please enter a valid email address!</h1>}
+
         <Input
           style={{ margin: '1.5em 0em' }}
           size="big"
@@ -66,6 +67,8 @@ function Signin() {
             Create an account
           </Button>
         </Button.Group>
+        {loading && <DelayedLoader />}
+        {error && <Message warning icon="lightbulb" header="Please enter a valid email address" />}
       </Card>
     </Layout>
   )
