@@ -23,16 +23,40 @@ export default function CodeInput({
 
   useEffect(() => {
     if (pos >= length || pos === -1) {
-      document.activeElement.blur()
+      inputRef[length - 1].focus()
       return
     }
     inputRef[pos].focus()
   })
 
-  const onKeyUp = index => event => {
+  const onChange = index => event => {
     if (disabled) return
-    let char = String.fromCharCode(event.keyCode)
 
+    let value = event.target.value
+    if (value === '') {
+      input[index] = ''
+    } else {
+      if (uppercase) {
+        value = value.toUpperCase()
+      }
+      for (let i = 0; i < value.length; i++) {
+        if (index + i > length) break
+        let char = value[i]
+        if (allowedChars.includes(char)) {
+          input[index + i] = char
+        }
+      }
+    }
+
+    const nextPos = input.findIndex(e => e === '')
+    if (nextPos === -1) {
+      onFilled(input.join(''))
+    }
+    setPos(nextPos)
+    setInput(input)
+  }
+
+  const onKeyUp = index => event => {
     if (event.keyCode === 8) {
       // backspace behaviour
       if (index === 0) return
@@ -41,22 +65,8 @@ export default function CodeInput({
         // -> empty previous
         input[index - 1] = ''
         setPos(index - 1)
-      } else {
-        input[index] = ''
+        setInput(input)
       }
-      setInput(input)
-    } else if (allowedChars.includes(char)) {
-      if (uppercase) {
-        char = char.toUpperCase()
-      }
-
-      input[index] = char
-      const nextPos = input.findIndex(e => e === '')
-      if (nextPos === -1) {
-        onFilled(input.join(''))
-      }
-      setPos(nextPos)
-      setInput(input)
     }
   }
 
@@ -64,7 +74,7 @@ export default function CodeInput({
     <div style={wrapperStyle} className="semantic-code-input">
       {initialValues.map((_, index) => (
         <Input key={index} type={type} disabled={disabled}>
-          <input maxLength="1" ref={handleRef(index)} onKeyDown={onKeyUp(index)} value={input[index]} />
+          <input ref={handleRef(index)} onKeyDown={onKeyUp(index)} onChange={onChange(index)} value={input[index]} />
         </Input>
       ))}
     </div>
